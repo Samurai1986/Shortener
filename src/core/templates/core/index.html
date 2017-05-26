@@ -1,0 +1,7 @@
+
+<form method="post" id='linkresolver'>
+  <input maxlength="250" formmethod="post" name="linkresolver" form="linkresolver">
+  <button form="linkresolver">Get shortlink!</button>
+</form>
+{% if error %} <p>{{error}}</p> {% endif %}
+{% if response %} <p>{{response}}</p> {% endif %}
