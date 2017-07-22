@@ -2,13 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Shortener
 from django.contrib.sites.shortcuts import get_current_site
-import random, string
-from django.views.decorators.csrf import csrf_exempt
+import random, string, re
 # Create your views here.
 
 import json
 
-#@csrf_exempt
 def urls(request, shorturl=None):
     context = {}
     if request.method == 'POST': #savelink
@@ -16,11 +14,14 @@ def urls(request, shorturl=None):
         # link = json.loads(request.POST.get('linkresolver','[]'))
         link = request.POST.get('linkresolver','[]')
         #попытка отлова бага
-        # if link != "http://"+"*" or 'https://'+'*':
-        #     error = "отсутствует http:// или https://"
-        #     context.update({'error': error}) # {% if response %} <p>{{response}}</p> {% endif %}
-        #     return render(request, 'core\index.html', context)
-        # else:
+        # print("link: ", link)
+        match = re.match(r'https?://', link) #возвращает совпадение
+        # print(match)
+        if not match: #False лень менять местами, поэтому not
+            error = "отсутствует http:// или https://"
+            context.update({'error': error}) # {% if response %} <p>{{response}}</p> {% endif %}
+            return render(request, 'core\index.html', context)
+        else: #regex это объект с 7 символами поэтому True
             shlink = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(Shortener.length))
             shortener = Shortener(link=link, shlink=shlink)
             shortener.save()
