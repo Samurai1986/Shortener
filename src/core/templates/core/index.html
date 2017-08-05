@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script type="javascript">
-  tset() {
-                    axios.POST('/new', td("url", "linkresolver"))
-        }
-  </script>
 </head>
 <body>
 <form method="post" id='linkresolver'>
   {% csrf_token %}
   <input maxlength="250" formmethod="post" name="linkresolver" form="linkresolver">
-  <button form="linkresolver" formaction="new">Get shortlink!</button>
+  <button id="submitButton" form="linkresolver" >Get shortlink!</button>
 
 </form>
 {% if error %} <p>{{error}}</p> {% endif %}
 {% if response %} <a href="{{response}}">{{response}}</a> {% endif %}
+<script src="{{ STATIC_URL }}www/js/jquery-3.2.1.min.js"></script>
+<script src="{{ STATIC_URL }}www/js/main.js"></script>
 </body>
 </html>

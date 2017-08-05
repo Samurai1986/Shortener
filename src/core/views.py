@@ -3,34 +3,32 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .models import Shortener
 from django.contrib.sites.shortcuts import get_current_site
 import random, string, re
+# from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 import json
 
+# @csrf_exempt
 def urls(request, shorturl=None):
     context = {}
     if request.method == 'POST': #savelink
-        #response = print(request.POST.itervalues()) #валим джанго чтобы видеть поля поста
-        # link = json.loads(request.POST.get('linkresolver','[]'))
-        link = request.POST.get('linkresolver','[]')
-        #попытка отлова бага
-        # print("link: ", link)
+        # response = print(request.POST.itervalues()) #валим джанго чтобы видеть поля поста
+        link = request.POST.get('linkresolver', '')
+        # link = request.POST.get('linkresolver','[]')
         match = re.match(r'https?://', link) #возвращает совпадение
-        # print(match)
         if not match: #False лень менять местами, поэтому not
-            error = "отсутствует http:// или https://"
-            context.update({'error': error}) # {% if response %} <p>{{response}}</p> {% endif %}
-            return render(request, 'core\index.html', context)
+            context.update({'error': "отсутствует http:// или https://"}) # {% if response %} <p>{{response}}</p> {% endif %}
+            return json.dumps(error)
         else: #regex это объект с 7 символами поэтому True
             shlink = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(Shortener.length))
             shortener = Shortener(link=link, shlink=shlink)
             shortener.save()
-            #return json.dumps(shortener.shlink)
-            site = str( get_current_site(request))
+            # site = str( get_current_site(request))
+            site = "localhost"
             response = "http://"+site+"/"+shortener.shlink
             context.update({'response': response}) # {% if response %} <p>{{response}}</p> {% endif %}
-            return render(request, 'core\index.html', context)
-            #return HttpResponse(response)
+            return json.dumps(response)
+            # return render(request, 'core\index.html', context)
     else:
         if shorturl:
             try:
