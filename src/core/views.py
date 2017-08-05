@@ -17,7 +17,8 @@ def urls(request, shorturl=None):
         # link = request.POST.get('linkresolver','[]')
         match = re.match(r'https?://', link) #возвращает совпадение
         if not match: #False лень менять местами, поэтому not
-            context.update({'error': "отсутствует http:// или https://"}) # {% if response %} <p>{{response}}</p> {% endif %}
+            error =  "отсутствует http:// или https://"
+            context.update({"error": error}) # {% if response %} <p>{{response}}</p> {% endif %}
             return json.dumps(error)
         else: #regex это объект с 7 символами поэтому True
             shlink = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(Shortener.length))
@@ -27,7 +28,9 @@ def urls(request, shorturl=None):
             site = "localhost"
             response = "http://"+site+"/"+shortener.shlink
             context.update({'response': response}) # {% if response %} <p>{{response}}</p> {% endif %}
-            return json.dumps(response)
+            # return json.dumps(response)
+            return HttpResponse(json.dumps({'response': response})) 
+
             # return render(request, 'core\index.html', context)
     else:
         if shorturl:
@@ -36,6 +39,6 @@ def urls(request, shorturl=None):
                 return HttpResponseRedirect(shortener.link)
             except Shortener.DoesNotExist:
                 context.update({'error': u'Данный URL не найден'}) # {% if error %} <p>{{error}}</p> {% endif %}
-                return render(request, 'core\index.html', context)
+                return render(request, 'core/index.html', context)
         else:
-            return render(request, 'core\index.html', context)
+            return render(request, 'core/index.html', context)
